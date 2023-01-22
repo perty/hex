@@ -18,10 +18,10 @@ public class DependencyTest {
 
     public static final String PACKAGE_ROOT = DependencyTest.class.getPackageName();
     public static final String DOMAIN = PACKAGE_ROOT + ".domain";
-    public static final String ADAPTER_OUT = PACKAGE_ROOT + ".out.adapter";
-    public static final String PORT_OUT = PACKAGE_ROOT + ".out.port";
-    public static final String PORT_IN = PACKAGE_ROOT + ".in.port";
-    private static final String ADAPTER_IN = PACKAGE_ROOT + ".in.adapter";
+    public static final String OUT_ADAPTER = PACKAGE_ROOT + ".out.adapter";
+    public static final String OUT_PORT = PACKAGE_ROOT + ".out.port";
+    public static final String IN_PORT = PACKAGE_ROOT + ".in.port";
+    private static final String IN_ADAPTER = PACKAGE_ROOT + ".in.adapter";
     private static final String CONFIG = PACKAGE_ROOT + ".config";
     private static Map<String, Set<String>> collectedDependencies;
 
@@ -47,17 +47,27 @@ public class DependencyTest {
 
     @Test
     void config_must_only_depend_on_port_out() {
-        assertDependencies(CONFIG, p -> (p.startsWith(PORT_OUT) || p.startsWith(CONFIG)));
+        assertDependencies(CONFIG, p -> (p.startsWith(OUT_PORT) || p.startsWith(CONFIG)));
     }
 
     @Test
     void out_adapter_must_only_depend_on_domain_and_port_out() {
-        assertDependencies(ADAPTER_OUT, p -> p.startsWith(DOMAIN) || p.startsWith(PORT_OUT));
+        assertDependencies(OUT_ADAPTER, p -> p.startsWith(DOMAIN) || p.startsWith(OUT_PORT));
     }
 
     @Test
     void in_adapter_must_only_depend_on_domain_and_port_in() {
-        assertDependencies(ADAPTER_IN, p -> p.startsWith(DOMAIN) || p.startsWith(PORT_IN));
+        assertDependencies(IN_ADAPTER, p -> p.startsWith(DOMAIN) || p.startsWith(IN_PORT));
+    }
+
+    @Test
+    void out_port_depends_only_on_domain() {
+        assertDependencies(OUT_PORT, p -> p.startsWith(DOMAIN) || p.startsWith(OUT_PORT));
+    }
+
+    @Test
+    void in_port_depends_only_on_domain() {
+        assertDependencies(IN_PORT, p -> p.startsWith(DOMAIN) || p.startsWith(CONFIG));
     }
 
     private static void assertDependencies(String packagePrefix, Predicate<String> acceptedDependencies) {
